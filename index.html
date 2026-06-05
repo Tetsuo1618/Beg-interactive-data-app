@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Footprints Method — Small-Business Data, No Computer Needed</title>
+<meta name="description" content="An interactive, no-tech guide to using simple data to grow a small business. Learn the 7-step path, study the glossary, practice with a real tally tracker, and test yourself." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Spline+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     DESIGN TOKENS — "Field Ledger" aesthetic: warm paper, ink,
+     terracotta + teal accents, ochre for hand-tally marks.
+     Light theme only (clean, Android-friendly, no dark mode).
+     ============================================================ */
+  :root{
+    --paper:#FAF5EC;
+    --paper-2:#F4EBDA;
+    --card:#FFFDF8;
+    --ink:#211C16;
+    --ink-soft:#5C5246;
+    --ink-faint:#8A7E6E;
+    --line:#E4D8C2;
+    --line-strong:#D3C4A8;
+    --terra:#C25A3C;
+    --terra-deep:#A4472D;
+    --teal:#2C6E63;
+    --teal-deep:#1F5249;
+    --ochre:#D9A441;
+    --good:#2C6E63;
+    --bad:#B23A2E;
+    --display:'Fraunces',Georgia,serif;
+    --body:'Spline Sans',-apple-system,sans-serif;
+    --mono:'Spline Sans Mono',ui-monospace,monospace;
+    --shadow:0 1px 2px rgba(33,28,22,.05),0 8px 24px -12px rgba(33,28,22,.18);
+    --shadow-lg:0 2px 4px rgba(33,28,22,.06),0 24px 48px -20px rgba(33,28,22,.28);
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    color:var(--ink);
+    background-color:var(--paper);
+    /* notebook dot-grid + faint paper grain layered behind everything */
+    background-image:
+      radial-gradient(var(--line) 1px, transparent 1px);
+    background-size:22px 22px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--ochre);color:var(--ink)}
+
+  /* ----------------------------- NAV ----------------------------- */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,245,236,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1080px;margin:0 auto;padding:.7rem 1.1rem;
+    display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:.6rem;margin-right:auto;cursor:pointer}
+  .brand .glyph{
+    width:34px;height:34px;flex:none;border-radius:9px;
+    background:var(--terra);color:#fff;display:grid;place-items:center;
+    font-family:var(--display);font-weight:900;font-size:1.1rem;
+    box-shadow:var(--shadow);transform:rotate(-4deg);
+  }
+  .brand b{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:-.01em}
+  .brand span{display:block;font-size:.7rem;color:var(--ink-faint);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+  nav.tabs{display:flex;gap:.2rem;flex-wrap:wrap}
+  .tab{
+    font-family:var(--body);font-size:.9rem;font-weight:600;
+    color:var(--ink-soft);background:none;border:0;cursor:pointer;
+    padding:.45rem .8rem;border-radius:999px;transition:.18s;white-space:nowrap;
+  }
+  .tab:hover{color:var(--ink);background:var(--paper-2)}
+  .tab.active{color:#fff;background:var(--ink)}
+
+  /* --------------------------- LAYOUT --------------------------- */
+  main{max-width:1080px;margin:0 auto;padding:0 1.1rem 6rem}
+  .view{display:none;animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  .view.active{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  section{margin-top:2.4rem}
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--terra-deep);margin-bottom:.5rem;
+  }
+  h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:-.02em;line-height:1.1}
+  h2.section-title{font-size:clamp(1.6rem,4vw,2.3rem);margin-bottom:.4rem}
+  .lead{color:var(--ink-soft);font-size:1.05rem;max-width:62ch}
+
+  /* ---------------------------- HOME ---------------------------- */
+  .hero{
+    margin-top:2.2rem;position:relative;
+    background:
+      linear-gradient(180deg,var(--card),var(--paper-2));
+    border:1px solid var(--line-strong);border-radius:24px;
+    padding:clamp(1.6rem,5vw,3.4rem);box-shadow:var(--shadow-lg);
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+    background:radial-gradient(circle at 30% 30%,rgba(217,164,65,.5),transparent 62%);
+    pointer-events:none;
+  }
+  .hero .tag{
+    display:inline-block;font-family:var(--mono);font-size:.74rem;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--teal-deep);
+    background:rgba(44,110,99,.1);border:1px solid rgba(44,110,99,.25);
+    padding:.35rem .7rem;border-radius:999px;margin-bottom:1.1rem;
+  }
+  .hero h1{font-size:clamp(2.1rem,6.5vw,4rem);max-width:16ch}
+  .hero h1 em{font-style:italic;color:var(--terra)}
+  .hero p{margin-top:1.1rem;font-size:clamp(1rem,2.4vw,1.18rem);color:var(--ink-soft);max-width:54ch}
+  .hero-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.8rem}
+
+  .btn{
+    font-family:var(--body);font-weight:600;font-size:.95rem;cursor:pointer;
+    padding:.75rem 1.3rem;border-radius:999px;border:1px solid transparent;
+    transition:.18s;display:inline-flex;align-items:center;gap:.5rem;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--terra);color:#fff;box-shadow:var(--shadow)}
+  .btn-primary:hover{background:var(--terra-deep)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+  .btn-ghost:hover{background:var(--paper-2)}
+
+  .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.6rem}
+  .home-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:1.4rem;box-shadow:var(--shadow);cursor:pointer;transition:.2s;
+  }
+  .home-card:hover{transform:translateY(-4px);border-color:var(--line-strong);box-shadow:var(--shadow-lg)}
+  .home-card .num{font-family:var(--mono);font-size:.78rem;color:var(--terra-deep);font-weight:600}
+  .home-card h3{font-size:1.25rem;margin:.5rem 0 .35rem}
+  .home-card p{font-size:.92rem;color:var(--ink-soft)}
+  .home-card .go{margin-top:.8rem;font-weight:600;color:var(--terra);font-size:.88rem}
+
+  /* progress bar */
+  .progress-wrap{margin-top:1.8rem;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:1.1rem 1.3rem;box-shadow:var(--shadow)}
+  .progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.6rem}
+  .progress-head b{font-family:var(--display);font-size:1.05rem}
+  .progress-head span{font-family:var(--mono);font-size:.85rem;color:var(--ink-faint)}
+  .bar{height:12px;background:var(--paper-2);border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--terra));
+    border-radius:999px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+  /* --------------------------- THE PATH --------------------------- */
+  .steps{display:flex;flex-direction:column;gap:1rem;margin-top:1.6rem}
+  .step{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;transition:.2s;
+  }
+  .step.done{border-color:var(--teal);background:linear-gradient(180deg,rgba(44,110,99,.05),var(--card))}
+  .step-head{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.2rem;cursor:pointer}
+  .step-no{
+    flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
+    font-family:var(--display);font-weight:700;font-size:1.2rem;
+    background:var(--paper-2);color:var(--terra-deep);border:1px solid var(--line-strong);transition:.2s;
+  }
+  .step.done .step-no{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .step-head h3{font-size:1.12rem;flex:1;line-height:1.25}
+  .chev{flex:none;color:var(--ink-faint);transition:transform .25s;font-size:1.1rem}
+  .step.open .chev{transform:rotate(180deg)}
+  .step-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .step-inner{padding:0 1.2rem 1.3rem 4.1rem}
+  .block{margin-bottom:1rem}
+  .block .label{
+    font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:.25rem;display:inline-block;
+  }
+  .label.everyday{color:var(--terra-deep)}
+  .label.why{color:var(--teal-deep)}
+  .label.check{color:var(--ochre);filter:brightness(.8)}
+  .block p{color:var(--ink-soft);font-size:.98rem}
+  .checkin{background:var(--paper-2);border-left:3px solid var(--ochre);
+    border-radius:8px;padding:.7rem .9rem}
+  .checkin p{color:var(--ink)}
+  .step-actions{margin-top:.4rem}
+  .toggle-done{
+    font-family:var(--body);font-weight:600;font-size:.88rem;cursor:pointer;
+    border:1px solid var(--teal);color:var(--teal-deep);background:transparent;
+    padding:.5rem 1rem;border-radius:999px;transition:.18s;
+  }
+  .toggle-done:hover{background:rgba(44,110,99,.08)}
+  .step.done .toggle-done{background:var(--teal);color:#fff}
+
+  /* --------------------------- GLOSSARY --------------------------- */
+  .gloss-controls{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-top:1.3rem}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{
+    width:100%;font-family:var(--body);font-size:.95rem;color:var(--ink);
+    background:var(--card);border:1px solid var(--line-strong);border-radius:999px;
+    padding:.7rem 1rem .7rem 2.4rem;outline:none;transition:.18s;
+  }
+  .search input:focus{border-color:var(--terra);box-shadow:0 0 0 3px rgba(194,90,60,.15)}
+  .search svg{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--ink-faint)}
+  .filters{display:flex;gap:.35rem;flex-wrap:wrap}
+  .chip{
+    font-family:var(--body);font-size:.82rem;font-weight:600;cursor:pointer;
+    border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);
+    padding:.45rem .85rem;border-radius:999px;transition:.16s;
+  }
+  .chip:hover{border-color:var(--terra);color:var(--ink)}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.4rem}
+  .term{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:1.2rem;box-shadow:var(--shadow);transition:.2s;position:relative;
+  }
+  .term:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--line-strong)}
+  .term .cat{
+    font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;padding:.2rem .55rem;border-radius:999px;display:inline-block;margin-bottom:.6rem;
+  }
+  .cat-core{background:rgba(194,90,60,.12);color:var(--terra-deep)}
+  .cat-quality{background:rgba(44,110,99,.12);color:var(--teal-deep)}
+  .cat-analysis{background:rgba(217,164,65,.18);color:#8a6410}
+  .cat-execution{background:rgba(33,28,22,.08);color:var(--ink-soft)}
+  .cat-basics{background:rgba(194,90,60,.1);color:var(--terra-deep)}
+  .term h3{font-size:1.2rem;margin-bottom:.4rem}
+  .term .def{font-size:.94rem;color:var(--ink-soft)}
+  .term .analogy{
+    margin-top:.7rem;font-family:var(--display);font-style:italic;font-size:.95rem;
+    color:var(--ink);padding-top:.6rem;border-top:1px dashed var(--line-strong);
+  }
+  .term .analogy::before{content:"🔍 ";font-style:normal}
+  .no-results{grid-column:1/-1;text-align:center;color:var(--ink-faint);padding:2rem;font-style:italic}
+
+  /* --------------------------- PRACTICE --------------------------- */
+  .practice-tabs{display:flex;gap:.4rem;margin-top:1.3rem}
+  .ptab{
+    font-family:var(--body);font-weight:600;font-size:.9rem;cursor:pointer;
+    border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);
+    padding:.55rem 1.1rem;border-radius:10px;transition:.16s;
+  }
+  .ptab.active{background:var(--terra);color:#fff;border-color:var(--terra)}
+  .panel{display:none;margin-top:1.3rem}
+  .panel.active{display:block;animation:rise .4s both}
+  .tool{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:1.4rem;box-shadow:var(--shadow)}
+  .tool-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+  .tool-row input{
+    flex:1;min-width:160px;font-family:var(--body);font-size:.95rem;
+    border:1px solid var(--line-strong);border-radius:10px;padding:.65rem .9rem;outline:none;background:var(--paper);
+  }
+  .tool-row input:focus{border-color:var(--terra);box-shadow:0 0 0 3px rgba(194,90,60,.15)}
+
+  .item-list{display:flex;flex-direction:column;gap:.8rem}
+  .item{
+    display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;
+  }
+  .item .name{font-weight:600;min-width:90px}
+  .tallies{flex:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:30px}
+  .tgroup{display:inline-flex;position:relative;gap:4px;padding:2px 0}
+  .tgroup .mk{width:3px;height:26px;background:var(--teal-deep);border-radius:2px;display:inline-block;transform:rotate(4deg)}
+  .tgroup .strike{position:absolute;left:-4px;top:50%;width:34px;height:3px;background:var(--terra);
+    border-radius:2px;transform:rotate(-22deg)}
+  .count{font-family:var(--mono);font-weight:600;color:var(--ink-faint);font-size:.85rem;min-width:26px;text-align:right}
+  .item .add{
+    flex:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--teal);
+    background:rgba(44,110,99,.08);color:var(--teal-deep);font-size:1.3rem;font-weight:700;
+    cursor:pointer;line-height:1;transition:.15s;
+  }
+  .item .add:hover{background:var(--teal);color:#fff}
+  .item .del{flex:none;background:none;border:0;color:var(--ink-faint);cursor:pointer;font-size:1.1rem;padding:.2rem .4rem}
+  .item .del:hover{color:var(--bad)}
+
+  .chartbox{margin-top:1.4rem;padding-top:1.2rem;border-top:1px dashed var(--line-strong)}
+  .chartbox h4{font-family:var(--display);font-size:1.05rem;margin-bottom:.8rem}
+  .barrow{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem}
+  .barrow .blabel{width:90px;font-size:.85rem;font-weight:600;text-align:right;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .barrow .btrack{flex:1;background:var(--paper-2);border-radius:6px;height:24px;overflow:hidden;border:1px solid var(--line)}
+  .barrow .bfill{height:100%;background:linear-gradient(90deg,var(--ochre),var(--terra));border-radius:6px;
+    transition:width .5s cubic-bezier(.2,.8,.2,1);min-width:2px}
+  .barrow .bval{font-family:var(--mono);font-size:.8rem;width:30px;color:var(--ink-soft)}
+  .winner{background:rgba(217,164,65,.14);border:1px solid var(--ochre);border-radius:10px;
+    padding:.7rem 1rem;margin-top:1rem;font-size:.92rem}
+  .winner b{color:var(--terra-deep)}
+
+  .hours-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:.6rem}
+  .hourcell{
+    background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:.7rem;
+    text-align:center;cursor:pointer;transition:.15s;
+  }
+  .hourcell:hover{border-color:var(--terra)}
+  .hourcell.peak{background:rgba(217,164,65,.16);border-color:var(--ochre)}
+  .hourcell .h{font-weight:600;font-size:.9rem;font-family:var(--mono)}
+  .hourcell .dots{margin-top:.4rem;min-height:20px;font-size:1rem;line-height:1.1;color:var(--terra);word-break:break-all}
+  .hourcell .hc{font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);margin-top:.2rem}
+
+  .reset{margin-top:1.2rem;background:none;border:1px solid var(--line-strong);color:var(--ink-soft);
+    padding:.5rem 1rem;border-radius:999px;cursor:pointer;font-family:var(--body);font-weight:600;font-size:.85rem}
+  .reset:hover{border-color:var(--bad);color:var(--bad)}
+  .hint{font-size:.88rem;color:var(--ink-faint);margin-top:.9rem;font-style:italic}
+
+  /* ---------------------------- QUIZ ---------------------------- */
+  .quiz-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:1.5rem;box-shadow:var(--shadow);margin-top:1.4rem}
+  .q{margin-bottom:1.6rem}
+  .q:last-child{margin-bottom:0}
+  .q .qnum{font-family:var(--mono);font-size:.78rem;color:var(--terra-deep);font-weight:600}
+  .q .qtext{font-family:var(--display);font-size:1.15rem;margin:.3rem 0 .9rem;line-height:1.3}
+  .opts{display:flex;flex-direction:column;gap:.55rem}
+  .opt{
+    display:flex;align-items:flex-start;gap:.7rem;cursor:pointer;
+    border:1px solid var(--line-strong);border-radius:11px;padding:.75rem .9rem;
+    transition:.15s;background:var(--paper);font-size:.95rem;
+  }
+  .opt:hover{border-color:var(--terra);background:var(--card)}
+  .opt .key{flex:none;width:24px;height:24px;border-radius:7px;background:var(--paper-2);
+    border:1px solid var(--line-strong);display:grid;place-items:center;font-weight:700;font-size:.82rem;font-family:var(--mono)}
+  .opt.correct{border-color:var(--good);background:rgba(44,110,99,.1)}
+  .opt.correct .key{background:var(--good);color:#fff;border-color:var(--good)}
+  .opt.wrong{border-color:var(--bad);background:rgba(178,58,46,.08)}
+  .opt.wrong .key{background:var(--bad);color:#fff;border-color:var(--bad)}
+  .opt.locked{cursor:default;pointer-events:none;opacity:.85}
+  .opt.locked.correct,.opt.locked.wrong{opacity:1}
+  .explain{margin-top:.7rem;font-size:.9rem;color:var(--ink-soft);background:var(--paper-2);
+    border-radius:9px;padding:.7rem .9rem;display:none}
+  .explain.show{display:block;animation:rise .3s both}
+  .explain b{color:var(--ink)}
+
+  .score-banner{
+    background:linear-gradient(135deg,var(--card),var(--paper-2));
+    border:1px solid var(--line-strong);border-radius:var(--radius);
+    padding:1.4rem;text-align:center;margin-top:1.4rem;box-shadow:var(--shadow);display:none;
+  }
+  .score-banner.show{display:block;animation:rise .4s both}
+  .score-banner .big{font-family:var(--display);font-size:2.6rem;font-weight:700;color:var(--terra)}
+  .score-banner p{color:var(--ink-soft);margin-top:.3rem}
+
+  /* short-answer self-check */
+  .sa{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:.8rem}
+  .sa .qtext{font-family:var(--display);font-size:1.02rem;margin-bottom:.6rem}
+  .sa textarea{width:100%;font-family:var(--body);font-size:.92rem;border:1px solid var(--line-strong);
+    border-radius:9px;padding:.6rem .8rem;outline:none;resize:vertical;min-height:62px;background:var(--paper)}
+  .sa textarea:focus{border-color:var(--terra);box-shadow:0 0 0 3px rgba(194,90,60,.12)}
+  .reveal{margin-top:.6rem;background:none;border:1px solid var(--teal);color:var(--teal-deep);
+    font-family:var(--body);font-weight:600;font-size:.84rem;padding:.45rem .9rem;border-radius:999px;cursor:pointer}
+  .reveal:hover{background:rgba(44,110,99,.08)}
+  .model{display:none;margin-top:.7rem;font-size:.9rem;color:var(--ink-soft);
+    border-left:3px solid var(--teal);padding:.5rem .8rem;background:var(--paper-2);border-radius:0 8px 8px 0}
+  .model.show{display:block;animation:rise .3s both}
+  .model b{color:var(--ink)}
+
+  /* --------------------------- FOOTER --------------------------- */
+  footer{max-width:1080px;margin:3rem auto 0;padding:2rem 1.1rem;border-top:1px solid var(--line);
+    color:var(--ink-faint);font-size:.85rem;text-align:center}
+  footer b{font-family:var(--display);color:var(--ink-soft)}
+
+  @media(max-width:640px){
+    .step-inner{padding-left:1.2rem}
+    .nav-inner{gap:.6rem}
+    .brand span{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand" onclick="show('home')">
+      <div class="glyph">F</div>
+      <div><b>The Footprints Method</b><span>Small-business data, no computer needed</span></div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-view="home" onclick="show('home')">Home</button>
+      <button class="tab" data-view="path" onclick="show('path')">The Path</button>
+      <button class="tab" data-view="glossary" onclick="show('glossary')">Glossary</button>
+      <button class="tab" data-view="practice" onclick="show('practice')">Practice</button>
+      <button class="tab" data-view="quiz" onclick="show('quiz')">Quiz</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================ HOME ============================ -->
+  <div class="view active" id="home">
+    <div class="hero">
+      <span class="tag">No apps · No spreadsheets · Just a notebook</span>
+      <h1>Your customers leave <em>footprints</em>. Learn to read them.</h1>
+      <p>Data is just small clues from real life — who came in, when they bought, what sat on the shelf too long. This is an interactive course on turning those clues into more profit and less stress, no computer skills required.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="show('path')">Start the 7-step path →</button>
+        <button class="btn btn-ghost" onclick="show('practice')">Try the tally tracker</button>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-head">
+        <b>Your progress</b>
+        <span id="home-progress-text">0 of 7 steps complete</span>
+      </div>
+      <div class="bar"><i id="home-progress-bar"></i></div>
+    </div>
+
+    <section>
+      <p class="eyebrow">What's inside</p>
+      <h2 class="section-title">Four ways to learn</h2>
+      <div class="home-grid">
+        <div class="home-card" onclick="show('path')">
+          <div class="num">01 / LEARN</div>
+          <h3>The Path</h3>
+          <p>Seven hands-on steps, from spotting clues to making one small change that earns you money.</p>
+          <div class="go">Walk the path →</div>
+        </div>
+        <div class="home-card" onclick="show('glossary')">
+          <div class="num">02 / REFERENCE</div>
+          <h3>Glossary</h3>
+          <p>Thirty terms, from plain-English basics to KPIs, LTV, and cohort analysis — searchable.</p>
+          <div class="go">Browse terms →</div>
+        </div>
+        <div class="home-card" onclick="show('practice')">
+          <div class="num">03 / DO</div>
+          <h3>Practice</h3>
+          <p>A real working tally tracker and peak-hour finder. Collect data right here, watch the chart grow.</p>
+          <div class="go">Open the tools →</div>
+        </div>
+        <div class="home-card" onclick="show('quiz')">
+          <div class="num">04 / TEST</div>
+          <h3>Quiz</h3>
+          <p>Five questions with instant feedback, plus reflection prompts to check what stuck.</p>
+          <div class="go">Test yourself →</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================ PATH ============================ -->
+  <div class="view" id="path">
+    <section style="margin-top:2.2rem">
+      <p class="eyebrow">Learning path · Step by step</p>
+      <h2 class="section-title">The 7-step Footprints Method</h2>
+      <p class="lead">Tap a step to expand it. Mark each one done as you go — your progress is saved on this device.</p>
+
+      <div class="progress-wrap" style="margin-top:1.4rem">
+        <div class="progress-head">
+          <b>Path progress</b>
+          <span id="path-progress-text">0 of 7 complete</span>
+        </div>
+        <div class="bar"><i id="path-progress-bar"></i></div>
+      </div>
+
+      <div class="steps" id="steps"></div>
+    </section>
+  </div>
+
+  <!-- ========================== GLOSSARY ========================== -->
+  <div class="view" id="glossary">
+    <section style="margin-top:2.2rem">
+      <p class="eyebrow">Reference · 30 terms</p>
+      <h2 class="section-title">The data glossary</h2>
+      <p class="lead">Start with the plain-English basics, then level up to the metrics real businesses track. Search any term or filter by topic.</p>
+
+      <div class="gloss-controls">
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="gloss-search" type="text" placeholder="Search terms or definitions…" oninput="renderGloss()" />
+        </div>
+        <div class="filters" id="gloss-filters"></div>
+      </div>
+
+      <div class="gloss-grid" id="gloss-grid"></div>
+    </section>
+  </div>
+
+  <!-- ========================== PRACTICE ========================== -->
+  <div class="view" id="practice">
+    <section style="margin-top:2.2rem">
+      <p class="eyebrow">Practice · Real tools</p>
+      <h2 class="section-title">Collect data right now</h2>
+      <p class="lead">This is the whole method in miniature. Add what you sell, tap to tally each sale, and watch the chart reveal your best — and worst — performers. Everything saves on this device.</p>
+
+      <div class="practice-tabs">
+        <button class="ptab active" data-panel="items" onclick="ptab('items')">🧾 Sales Tally</button>
+        <button class="ptab" data-panel="hours" onclick="ptab('hours')">⏰ Peak Hours</button>
+      </div>
+
+      <!-- SALES TALLY PANEL -->
+      <div class="panel active" id="panel-items">
+        <div class="tool">
+          <div class="tool-row">
+            <input id="item-name" type="text" placeholder="Add a product (e.g. Coffee, Muffin, Hammer)…" onkeydown="if(event.key==='Enter')addItem()" />
+            <button class="btn btn-primary" onclick="addItem()">+ Add item</button>
+          </div>
+          <div class="item-list" id="item-list"></div>
+          <div class="chartbox">
+            <h4>What's selling — at a glance</h4>
+            <div id="item-chart"></div>
+            <div class="winner" id="item-winner" style="display:none"></div>
+          </div>
+          <p class="hint">Tip from Step 2: tally for one full week before you judge. One slow day isn't a trend.</p>
+          <button class="reset" onclick="resetItems()">Reset tally</button>
+        </div>
+      </div>
+
+      <!-- PEAK HOURS PANEL -->
+      <div class="panel" id="panel-hours">
+        <div class="tool">
+          <p style="color:var(--ink-soft);font-size:.95rem;margin-bottom:1rem">Tap an hour each time a customer buys. The busiest hours light up — that's where your staff (and energy) should go.</p>
+          <div class="hours-grid" id="hours-grid"></div>
+          <div class="winner" id="hours-winner" style="display:none"></div>
+          <p class="hint">From Step 3: your real peak often surprises you. Many owners guess noon and discover it's 4pm.</p>
+          <button class="reset" onclick="resetHours()">Reset hours</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============================ QUIZ ============================ -->
+  <div class="view" id="quiz">
+    <section style="margin-top:2.2rem">
+      <p class="eyebrow">Test yourself · Instant feedback</p>
+      <h2 class="section-title">Check what stuck</h2>
+      <p class="lead">Pick an answer to see if you're right and why. No penalty for trying — that's the whole point.</p>
+
+      <div class="quiz-card" id="quiz-card"></div>
+
+      <div class="score-banner" id="score-banner">
+        <div class="big" id="score-big">0 / 5</div>
+        <p id="score-msg"></p>
+      </div>
+
+      <section style="margin-top:2.4rem">
+        <p class="eyebrow">Reflection · Write &amp; reveal</p>
+        <h2 class="section-title" style="font-size:1.5rem">Think it through</h2>
+        <p class="lead" style="margin-bottom:1.2rem">No right-or-wrong here. Jot your own answer, then reveal a model response to compare.</p>
+        <div id="short-answers"></div>
+      </section>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <p><b>The Footprints Method</b> — an interactive course built from the <i>Small-Business Data Leverage</i> guide &amp; glossary.</p>
+  <p style="margin-top:.4rem">Runs entirely in your browser. No tracking, no servers, no internet required after loading.</p>
+</footer>
+
+<script>
+/* ================================================================
+   DATA — all course content lives here so it's easy to edit later.
+   ================================================================ */
+
+// --- The 7-step learning path (from BEG_GD_Vol16) ---
+const STEPS = [
+  { t:"See the Invisible Clues Around You",
+    e:"Every time a customer buys something, asks a question, or walks past a shelf, they leave a clue. Data is just those clues written down. \"At 11am three people asked for iced coffee\" is data. \"On Monday I sold four hammers\" is data.",
+    w:"Most owners guess what works — and guessing leads to buying the wrong stock, sending staff home too early, or missing a popular item. When you write clues down, you stop guessing and start knowing.",
+    c:"Take a blank sheet and draw two columns: \"What I noticed\" and \"Time.\" Before lunch, write one thing you saw. You've just made your first piece of usable data." },
+  { t:"Track Your Daily Sales — No Register Needed",
+    e:"You don't need an electronic register. Keep a small notebook by the cash drawer. Each time someone pays, make a tally mark under the item they bought. At day's end, count the tallies.",
+    w:"After one week you'll see which items sell like hotcakes and which sit like bricks. That tells you what to reorder and what to put on sale. No computer, no app — just marks on paper.",
+    c:"After one full day you should have a page of tally groups (\"Coffee: IIII\", \"Muffin: II\"). If you can see which product has the most marks, you did it right." },
+  { t:"Notice Your Busy Hours With a Simple Chart",
+    e:"Draw a line down a page. On the left, list your open hours (8am, 9am, 10am…). Each sale, put a dot next to that hour. At closing, find the hour with the most dots — that's your peak.",
+    w:"You might think noon is busiest, but the dots could show 4pm is the real rush. Knowing your true peak helps you schedule staff when you need them and save wages when it's slow.",
+    c:"By the end of day three you should see one or two hours with noticeably more dots. Circle them. If it's unclear, collect for two more days — a pattern will appear." },
+  { t:"Ask Customers One Simple Question",
+    e:"Keep a small pad near the register. Ask every fifth customer: \"What's one thing you wish we had?\" or \"How did you hear about us?\" Write the answer in a word or short phrase. No forms, no QR codes.",
+    w:"Customers often know exactly what you're missing — but won't say unless asked. A few answers can reveal people want later hours, a loyalty card, or a brand they can't find nearby.",
+    c:"After one day you should have at least five short answers (\"more parking\", \"vegan options\", \"Instagram\"). Three different answers means you have real feedback — celebrate it." },
+  { t:"Look for the \"One Big Surprise\"",
+    e:"Take your last seven days of notes. Read all the tallies, dots, and answers, and hunt for something that surprises you — Tuesday busier than Saturday, or nobody buying the red keychains you love.",
+    w:"The surprise is where opportunity hides. Most owners ignore the unexpected because they \"know their business.\" But one odd fact — like sales spiking when it rains — can lead to a smart, profitable change.",
+    c:"Do your peak-hour dots match what you'd have guessed? If the answer is \"no\" or \"huh, that's weird,\" you found your first real insight. Put it on a sticky note on the register." },
+  { t:"Make One Tiny Change",
+    e:"Pick one surprise. Decide on a single cheap action. If Tuesday's dead, run a \"Tuesday only\" small discount. If people want later hours, stay open 30 minutes later on Fridays for two weeks. If a product has zero tallies, move it to a better shelf.",
+    w:"Data has no value until you act on it. A tiny change costs almost nothing but tests whether your observation is right. If it works, keep it. If not, go back to the notebook and try another surprise.",
+    c:"After the change, mark your calendar one week out. On that day, check the tallies again. Even a small lift (three more Tuesday sales) means your change worked." },
+  { t:"Repeat the Cycle — Keep It Tech-Free",
+    e:"You never have to buy a tablet or learn software. Keep using the paper notebook. Each Sunday, spend 10 minutes reviewing tallies and answers, then ask: \"What's the next small surprise?\"",
+    w:"Businesses change — seasons, holidays, new competitors. A habit of reading paper clues keeps you ahead without stress. You'll spot a sales drop before it's a crisis and catch a new hit while it's hot.",
+    c:"After one month you should have a notebook full of weekly surprises and at least one change that made you money. If you feel more confident in your decisions than a month ago — you've mastered no-tech data." }
+];
+
+// --- Glossary: basics (BEG file) + advanced (GLOSS file) ---
+const TERMS = [
+  // BASICS
+  {term:"Data", cat:"basics", catLabel:"Basics", def:"Small pieces of real information you collect by watching and writing down what happens.", analogy:"Footprints in the snow."},
+  {term:"Insight", cat:"basics", catLabel:"Basics", def:"A useful fact you learn from looking at your data, like \"most sales happen before 10am.\"", analogy:"Finding the one key that opens the cash drawer."},
+  {term:"Trend", cat:"basics", catLabel:"Basics", def:"A pattern that repeats over several days or weeks, like \"every Friday is quiet.\"", analogy:"A river that always flows the same direction."},
+  {term:"Peak Hour", cat:"basics", catLabel:"Basics", def:"The one or two hours each day when you get the most customers.", analogy:"The lunch rush in a diner."},
+  {term:"Inventory", cat:"basics", catLabel:"Basics", def:"The products you have in stock, waiting to be sold.", analogy:"Your pantry at home."},
+  {term:"Customer Feedback", cat:"basics", catLabel:"Basics", def:"Answers, comments, or requests that customers tell you directly.", analogy:"A friend telling you why they don't visit more often."},
+  {term:"Manual Tracking", cat:"basics", catLabel:"Basics", def:"Writing down information by hand instead of using a computer or app.", analogy:"Keeping a grocery list on paper."},
+  {term:"Baseline", cat:"basics", catLabel:"Basics", def:"What normally happens on a typical day or week — your starting point for comparison.", analogy:"Knowing your dog usually eats one bowl of food per day."},
+  {term:"Outlier", cat:"basics", catLabel:"Basics", def:"A weird day that's very different from normal (for example, 10× the usual sales).", analogy:"One thunderstorm in a sunny week."},
+  {term:"Actionable", cat:"basics", catLabel:"Basics", def:"A piece of data you can actually do something about, like \"we need more coffee cups.\"", analogy:"A road sign that says \"Detour ahead\" instead of just a picture of a road."},
+
+  // CORE METRICS & STRATEGY
+  {term:"KPI — Key Performance Indicator", cat:"core", catLabel:"Metrics & Strategy", def:"A specific metric you track to measure success, such as daily sales or website visitors. It keeps you focused and prevents \"analysis paralysis.\"", analogy:"The few gauges on a dashboard you actually watch while driving."},
+  {term:"ROI — Return on Investment", cat:"core", catLabel:"Metrics & Strategy", def:"Profit compared against the cost of an initiative. It's how you decide whether a Facebook ad or a new piece of software was worth the money.", analogy:"Checking if the seeds you planted grew more food than they cost."},
+  {term:"CAC — Customer Acquisition Cost", cat:"core", catLabel:"Metrics & Strategy", def:"Total marketing and sales spend divided by the number of new customers gained. The small-business trap is overspending to win customers who don't stick around long enough to pay it back.", analogy:"The price of the bait you used to catch each fish."},
+  {term:"LTV — Lifetime Value", cat:"core", catLabel:"Metrics & Strategy", def:"The total revenue one customer generates over the whole relationship with you. A common goal is to keep LTV at least 3× your CAC.", analogy:"A regular who buys coffee every morning is worth far more than one cup."},
+  {term:"Cohort Analysis", cat:"core", catLabel:"Metrics & Strategy", def:"Tracking the behavior of a specific group, like \"everyone who joined in January.\" It beats plain averages because it shows whether you're improving over time.", analogy:"Following one school class year by year instead of averaging the whole school."},
+
+  // DATA HANDLING & QUALITY
+  {term:"Structured Data", cat:"quality", catLabel:"Data Quality", def:"Organized information that fits neatly in rows and columns — spreadsheets and databases. Easy to sort and use.", analogy:"A tidy filing cabinet with labeled folders."},
+  {term:"Unstructured Data", cat:"quality", catLabel:"Data Quality", def:"Raw, messy information like emails, social-media comments, and photos. Harder to use, but it holds real customer sentiment.", analogy:"A shoebox stuffed with receipts and handwritten notes."},
+  {term:"Data Cleansing", cat:"quality", catLabel:"Data Quality", def:"Removing duplicates, correcting typos, and fixing missing values. The most important step, because \"garbage in, garbage out.\"", analogy:"Washing vegetables before you cook with them."},
+  {term:"Data Dictionary", cat:"quality", catLabel:"Data Quality", def:"A document explaining what each column in your spreadsheet means. Essential for keeping a non-technical team consistent.", analogy:"The legend on a map that tells you what each symbol means."},
+  {term:"Data Warehouse", cat:"quality", catLabel:"Data Quality", def:"A central place that stores data from sales, website, email, and more — instead of five separate, scattered CSV files.", analogy:"One big kitchen pantry instead of food hidden in five different rooms."},
+
+  // ANALYSIS & ACTION
+  {term:"Descriptive Analytics", cat:"analysis", catLabel:"Analysis", def:"Answers \"What happened?\" — like last month's sales. This is where most small businesses should start.", analogy:"Reading yesterday's weather report."},
+  {term:"Diagnostic Analytics", cat:"analysis", catLabel:"Analysis", def:"Answers \"Why did it happen?\" — for example, sales dropped after you changed the packaging.", analogy:"A doctor figuring out why you have a fever."},
+  {term:"Predictive Analytics", cat:"analysis", catLabel:"Analysis", def:"Answers \"What will happen next?\" — like forecasting next month. It needs more data, so be cautious with it.", analogy:"A weather forecast: a smart guess, never a guarantee."},
+  {term:"Segmentation", cat:"analysis", catLabel:"Analysis", def:"Splitting customers into groups — locals vs. tourists, high-spenders vs. one-timers — so you can personalize without being creepy.", analogy:"Sorting laundry into whites, colors, and delicates."},
+  {term:"Trend Analysis", cat:"analysis", catLabel:"Analysis", def:"Comparing data over time, week-over-week or year-over-year, to add context. \"This month looks great — until you see last month was 30% higher.\"", analogy:"Marking a child's height on the door frame each year."},
+
+  // PRACTICAL EXECUTION
+  {term:"A/B Testing", cat:"execution", catLabel:"Execution", def:"Comparing two versions — a red \"Buy Now\" button vs. a green one — to see which performs better. Low-risk and high-reward for small budgets.", analogy:"Baking two batches of cookies with one ingredient changed to see which people prefer."},
+  {term:"Benchmarking", cat:"execution", catLabel:"Execution", def:"Comparing your numbers to industry standards, like the average email open rate for bakeries. It stops you celebrating weak results or panicking over normal dips.", analogy:"Knowing the average marathon time before judging your own."},
+  {term:"Data Visualization", cat:"execution", catLabel:"Execution", def:"Using charts and graphs instead of raw spreadsheets. For a small business, one simple bar chart often says more than 100 rows of numbers.", analogy:"A picture of the route instead of written turn-by-turn directions."},
+  {term:"Actionable Insight", cat:"execution", catLabel:"Execution", def:"A finding you can actually act on, such as \"75% of complaints mention shipping.\" Avoid data that's interesting but useless.", analogy:"A weather alert that says \"bring an umbrella,\" not just \"it's humid.\""},
+  {term:"Data Governance", cat:"execution", catLabel:"Execution", def:"Basic rules about who can see and edit data. A classic small-business mistake is three people updating the same customer list with three different spellings.", analogy:"House rules about who's allowed to rearrange the shared family calendar."}
+];
+
+const CATS = [
+  {id:"all", label:"All terms"},
+  {id:"basics", label:"Basics"},
+  {id:"core", label:"Metrics & Strategy"},
+  {id:"quality", label:"Data Quality"},
+  {id:"analysis", label:"Analysis"},
+  {id:"execution", label:"Execution"}
+];
+
+// --- Quiz (5 MCQ from BEG file answer key) ---
+const QUIZ = [
+  { q:"What is the simplest way to start collecting data without any technology?",
+    opts:["Install a Wi-Fi security camera","Ask an employee to make a spreadsheet","Keep a paper notebook and make tally marks of sales","Download a sales-tracking app"],
+    correct:2, why:"A paper notebook with tally marks is the core no-tech method from Step 2 — no apps, cameras, or spreadsheets needed." },
+  { q:"Why is it helpful to know your \"peak hour\"?",
+    opts:["So you can close the shop during that time","So you can schedule more staff when busy and save wages when slow","So you can raise all prices during that hour","So you can email every customer"],
+    correct:1, why:"Knowing your peak hour lets you put staff where they're needed and cut labor cost when it's quiet (Step 3)." },
+  { q:"What should you do with customer feedback?",
+    opts:["Ignore it unless they fill out a long form","Write it down in a word or short phrase on paper","Only listen to customers who complain loudly","Wait until you have 100 answers before acting"],
+    correct:1, why:"Step 4 recommends jotting short answers on a small pad near the register — no forms or technology required." },
+  { q:"After you collect data for a week, what is the first thing to look for?",
+    opts:["The exact number of cents you made each day","A surprise — something you did not expect","The most complicated pattern you can find","A way to avoid writing anything next week"],
+    correct:1, why:"Step 5 says hunt for what surprises you — that's where the opportunity to improve actually lives." },
+  { q:"What does \"actionable\" mean in this guide?",
+    opts:["Something a computer does automatically","A piece of information you can actually change or use","A very long report with many numbers","An idea that requires new software"],
+    correct:1, why:"Actionable means you can take action on it — change hours, move products, adjust inventory (Step 6 and the glossary)." }
+];
+
+// --- Short-answer reflection prompts + model answers ---
+const SHORT = [
+  { q:"Name two things you could track with just a pen and paper in a small bakery.",
+    a:"For example: the number of croissants sold each morning, and the hour when most customers buy coffee. Any two observable, manual tallies work." },
+  { q:"If your notes show Saturday is much slower than Tuesday, what is one tiny change you could try?",
+    a:"Offer a \"Saturday special\" discount or a small free item to draw more people in. Any low-cost, easy test counts." },
+  { q:"Why should you not guess about your business if you can collect simple data instead?",
+    a:"Guessing leads to waste and missed opportunities, while simple data shows what's actually happening so you can make smart changes." },
+  { q:"What does it mean to \"look for the surprise\" in your notebook?",
+    a:"It means reading your notes and finding one fact you didn't expect — like Wednesday being busier than Saturday — that can lead to a profitable change." },
+  { q:"How can you use data to decide whether to stay open later on Fridays?",
+    a:"Collect data for two weeks by noting how many customers arrive after your current closing time. If you see several, test staying open 30 minutes later on Fridays and track whether sales rise." }
+];
+
+/* ================================================================
+   STATE + SAFE STORAGE
+   localStorage gives real persistence on GitHub Pages. We wrap it
+   in try/catch so the app never crashes if storage is blocked.
+   ================================================================ */
+const KEY = "footprints_v1";
+let state = { done:[], items:[], hours:{} };
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ state = Object.assign(state, JSON.parse(raw)); }
+  }catch(e){ /* storage unavailable — run in memory only */ }
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* ================================================================
+   NAVIGATION between views
+   ================================================================ */
+function show(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id===view));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===view));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ================================================================
+   THE PATH — render steps, toggle open/done, update progress
+   ================================================================ */
+function renderSteps(){
+  const wrap = document.getElementById('steps');
+  wrap.innerHTML = STEPS.map((s,i)=>{
+    const done = state.done.includes(i);
+    return `
+    <div class="step ${done?'done':''}" id="step-${i}">
+      <div class="step-head" onclick="toggleStep(${i})">
+        <div class="step-no">${done?'✓':i+1}</div>
+        <h3>${s.t}</h3>
+        <div class="chev">▾</div>
+      </div>
+      <div class="step-body" id="body-${i}">
+        <div class="step-inner">
+          <div class="block"><span class="label everyday">Everyday explanation</span><p>${s.e}</p></div>
+          <div class="block"><span class="label why">Why this matters</span><p>${s.w}</p></div>
+          <div class="block"><span class="label check">Mini check-in</span><div class="checkin"><p>${s.c}</p></div></div>
+          <div class="step-actions">
+            <button class="toggle-done" onclick="event.stopPropagation();toggleDone(${i})">${done?'✓ Completed':'Mark this step done'}</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleStep(i){
+  const step = document.getElementById('step-'+i);
+  const body = document.getElementById('body-'+i);
+  const open = step.classList.toggle('open');
+  body.style.maxHeight = open ? body.scrollHeight + 40 + 'px' : '0';
+}
+function toggleDone(i){
+  const idx = state.done.indexOf(i);
+  if(idx>-1) state.done.splice(idx,1); else state.done.push(i);
+  save(); renderSteps(); updateProgress();
+  // keep the step open after re-render so it doesn't collapse jarringly
+  const step = document.getElementById('step-'+i);
+  const body = document.getElementById('body-'+i);
+  step.classList.add('open');
+  body.style.maxHeight = body.scrollHeight + 40 + 'px';
+}
+function updateProgress(){
+  const n = state.done.length, pct = Math.round(n/STEPS.length*100);
+  ['home','path'].forEach(p=>{
+    const bar = document.getElementById(p+'-progress-bar');
+    const txt = document.getElementById(p+'-progress-text');
+    if(bar) bar.style.width = pct+'%';
+    if(txt) txt.textContent = `${n} of ${STEPS.length} ${p==='home'?'steps complete':'complete'}`;
+  });
+}
+
+/* ================================================================
+   GLOSSARY — filter chips + live search
+   ================================================================ */
+let activeCat = 'all';
+function renderFilters(){
+  document.getElementById('gloss-filters').innerHTML = CATS.map(c=>
+    `<button class="chip ${c.id===activeCat?'active':''}" onclick="setCat('${c.id}')">${c.label}</button>`
+  ).join('');
+}
+function setCat(id){ activeCat=id; renderFilters(); renderGloss(); }
+function renderGloss(){
+  const q = (document.getElementById('gloss-search').value||'').toLowerCase().trim();
+  const grid = document.getElementById('gloss-grid');
+  const list = TERMS.filter(t=>{
+    const catOk = activeCat==='all' || t.cat===activeCat;
+    const qOk = !q || t.term.toLowerCase().includes(q) || t.def.toLowerCase().includes(q) || t.analogy.toLowerCase().includes(q);
+    return catOk && qOk;
+  });
+  if(!list.length){ grid.innerHTML = `<div class="no-results">No terms match that search. Try another word.</div>`; return; }
+  grid.innerHTML = list.map(t=>`
+    <div class="term">
+      <span class="cat cat-${t.cat}">${t.catLabel}</span>
+      <h3>${t.term}</h3>
+      <div class="def">${t.def}</div>
+      <div class="analogy">${t.analogy}</div>
+    </div>`).join('');
+}
+
+/* ================================================================
+   PRACTICE — Sales tally tracker
+   ================================================================ */
+function ptab(name){
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.toggle('active', b.dataset.panel===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+}
+function addItem(){
+  const inp = document.getElementById('item-name');
+  const name = inp.value.trim();
+  if(!name) return;
+  // avoid duplicate names (case-insensitive)
+  if(state.items.some(it=>it.name.toLowerCase()===name.toLowerCase())){ inp.value=''; return; }
+  state.items.push({name:name, count:0});
+  inp.value=''; save(); renderItems();
+}
+function tallyItem(i){ state.items[i].count++; save(); renderItems(); }
+function delItem(i){ state.items.splice(i,1); save(); renderItems(); }
+function resetItems(){ if(confirm('Clear all tallied items?')){ state.items=[]; save(); renderItems(); } }
+
+// build the classic hand-tally visual: groups of 5 (4 strokes + 1 diagonal strike)
+function tallyMarks(n){
+  let html='', full=Math.floor(n/5), rem=n%5;
+  for(let g=0; g<full; g++){
+    html += `<span class="tgroup">${'<span class="mk"></span>'.repeat(4)}<span class="strike"></span></span>`;
+  }
+  if(rem>0){ html += `<span class="tgroup">${'<span class="mk"></span>'.repeat(rem)}</span>`; }
+  return html;
+}
+function renderItems(){
+  const list = document.getElementById('item-list');
+  if(!state.items.length){
+    list.innerHTML = `<p class="hint" style="margin:0">No items yet. Add what you sell above, then tap the <b>+</b> for each sale.</p>`;
+  } else {
+    list.innerHTML = state.items.map((it,i)=>`
+      <div class="item">
+        <div class="name">${it.name}</div>
+        <div class="tallies">${tallyMarks(it.count)}<span class="count">${it.count}</span></div>
+        <button class="add" onclick="tallyItem(${i})" title="Add one sale">+</button>
+        <button class="del" onclick="delItem(${i})" title="Remove">✕</button>
+      </div>`).join('');
+  }
+  renderItemChart();
+}
+function renderItemChart(){
+  const box = document.getElementById('item-chart');
+  const winner = document.getElementById('item-winner');
+  const withCounts = state.items.filter(it=>it.count>0);
+  if(!withCounts.length){
+    box.innerHTML = `<p class="hint" style="margin:0">Your chart appears once you tally a sale.</p>`;
+    winner.style.display='none'; return;
+  }
+  const max = Math.max(...withCounts.map(it=>it.count));
+  // sort highest first so the chart reads like a ranking
+  const sorted = [...withCounts].sort((a,b)=>b.count-a.count);
+  box.innerHTML = sorted.map(it=>`
+    <div class="barrow">
+      <div class="blabel" title="${it.name}">${it.name}</div>
+      <div class="btrack"><div class="bfill" style="width:${(it.count/max*100)}%"></div></div>
+      <div class="bval">${it.count}</div>
+    </div>`).join('');
+  const top = sorted[0], bottom = sorted[sorted.length-1];
+  winner.style.display='block';
+  let msg = `<b>${top.name}</b> is your best seller so far.`;
+  if(sorted.length>1 && bottom.count<top.count){
+    msg += ` <b>${bottom.name}</b> is lagging — that's a candidate to move, discount, or drop (Step 6).`;
+  }
+  winner.innerHTML = msg;
+}
+
+/* ================================================================
+   PRACTICE — Peak hours
+   ================================================================ */
+const HOURS = ["8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm"];
+function renderHours(){
+  const grid = document.getElementById('hours-grid');
+  const counts = HOURS.map(h=>state.hours[h]||0);
+  const max = Math.max(0, ...counts);
+  grid.innerHTML = HOURS.map((h)=>{
+    const c = state.hours[h]||0;
+    const isPeak = max>0 && c===max;
+    return `
+    <div class="hourcell ${isPeak?'peak':''}" onclick="tallyHour('${h}')">
+      <div class="h">${h}</div>
+      <div class="dots">${'•'.repeat(Math.min(c,12))}${c>12?'…':''}</div>
+      <div class="hc">${c}</div>
+    </div>`;
+  }).join('');
+  const winner = document.getElementById('hours-winner');
+  if(max>0){
+    const peaks = HOURS.filter(h=>(state.hours[h]||0)===max);
+    winner.style.display='block';
+    winner.innerHTML = `Busiest so far: <b>${peaks.join(', ')}</b> with ${max} sale${max>1?'s':''}. Staff up here; ease off when it's quiet.`;
+  } else {
+    winner.style.display='none';
+  }
+}
+function tallyHour(h){ state.hours[h]=(state.hours[h]||0)+1; save(); renderHours(); }
+function resetHours(){ if(confirm('Clear all hour dots?')){ state.hours={}; save(); renderHours(); } }
+
+/* ================================================================
+   QUIZ — answer locking, scoring
+   ================================================================ */
+let answered = {};  // qIndex -> chosen option index
+function renderQuiz(){
+  const card = document.getElementById('quiz-card');
+  card.innerHTML = QUIZ.map((item,qi)=>{
+    const opts = item.opts.map((o,oi)=>{
+      const keyLetter = String.fromCharCode(97+oi); // a,b,c,d
+      return `<div class="opt" id="opt-${qi}-${oi}" onclick="answer(${qi},${oi})">
+                <span class="key">${keyLetter}</span><span>${o}</span>
+              </div>`;
+    }).join('');
+    return `<div class="q">
+      <div class="qnum">Question ${qi+1} of ${QUIZ.length}</div>
+      <div class="qtext">${item.q}</div>
+      <div class="opts">${opts}</div>
+      <div class="explain" id="explain-${qi}"></div>
+    </div>`;
+  }).join('');
+}
+function answer(qi, oi){
+  if(qi in answered) return;            // lock after first choice
+  answered[qi] = oi;
+  const correct = QUIZ[qi].correct;
+  // lock & color every option in this question
+  QUIZ[qi].opts.forEach((_,k)=>{
+    const el = document.getElementById(`opt-${qi}-${k}`);
+    el.classList.add('locked');
+    if(k===correct) el.classList.add('correct');
+    else if(k===oi) el.classList.add('wrong');
+  });
+  const exp = document.getElementById('explain-'+qi);
+  const right = oi===correct;
+  exp.innerHTML = `<b>${right?'Correct. ':'Not quite. '}</b>${QUIZ[qi].why}`;
+  exp.classList.add('show');
+  updateScore();
+}
+function updateScore(){
+  const total = QUIZ.length;
+  if(Object.keys(answered).length < total) return;   // wait until all answered
+  let score = 0;
+  for(const qi in answered){ if(answered[qi]===QUIZ[qi].correct) score++; }
+  const banner = document.getElementById('score-banner');
+  document.getElementById('score-big').textContent = `${score} / ${total}`;
+  const pct = score/total;
+  let msg = "Review the steps and try again — repetition is how it sticks.";
+  if(pct===1) msg = "Perfect score. You've got the Footprints Method down cold.";
+  else if(pct>=0.6) msg = "Solid work. Skim the steps you missed and you'll have it.";
+  document.getElementById('score-msg').textContent = msg;
+  banner.classList.add('show');
+  banner.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ================================================================
+   QUIZ — short-answer reflection (write + reveal model answer)
+   ================================================================ */
+function renderShort(){
+  const wrap = document.getElementById('short-answers');
+  wrap.innerHTML = SHORT.map((s,i)=>`
+    <div class="sa">
+      <div class="qtext">${i+1}. ${s.q}</div>
+      <textarea placeholder="Write your answer…"></textarea>
+      <button class="reveal" onclick="revealModel(${i})">Reveal a model answer</button>
+      <div class="model" id="model-${i}"><b>One good answer:</b> ${s.a}</div>
+    </div>`).join('');
+}
+function revealModel(i){ document.getElementById('model-'+i).classList.toggle('show'); }
+
+/* ================================================================
+   INIT
+   ================================================================ */
+load();
+renderSteps();
+updateProgress();
+renderFilters();
+renderGloss();
+renderItems();
+renderHours();
+renderQuiz();
+renderShort();
+</script>
+</body>
+</html>
